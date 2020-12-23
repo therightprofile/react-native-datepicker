@@ -6,13 +6,12 @@ import {
   Image,
   Modal,
   TouchableHighlight,
-  DatePickerAndroid,
-  TimePickerAndroid,
-  DatePickerIOS,
   Platform,
   Animated,
   Keyboard
 } from 'react-native';
+
+import DateTimePicker from '@react-native-community/datetimepicker';
 import Style from './style';
 import Moment from 'moment';
 
@@ -49,12 +48,30 @@ class DatePicker extends Component {
     this.onDatetimeTimePicked = this.onDatetimeTimePicked.bind(this);
     this.setModalVisible = this.setModalVisible.bind(this);
   }
+  
 
+  componentDidUpdate(prevProps){
+  if ( prevProps.date !== this.props.date ) {
+    this.setState({date: this.getDate(this.props.date)});
+  }
+}
+  
+  
+  /*
   componentWillReceiveProps(nextProps) {
     if (nextProps.date !== this.props.date) {
       this.setState({date: this.getDate(nextProps.date)});
     }
   }
+
+  static getDerivedStateFromProps(nextProps, prevState){
+   if(nextProps.date!==prevState.date){
+     return { date: this.getDate(nextProps.date)};
+  }
+  else return null;
+}
+  */
+
 
   setModalVisible(visible) {
     const {height, duration} = this.props;
@@ -198,7 +215,7 @@ class DatePicker extends Component {
   }
 
   onDatePicked({action, year, month, day}) {
-    if (action !== DatePickerAndroid.dismissedAction) {
+    if (year !== undefined && month !== undefined && day !== undefined) {
       this.setState({
         date: new Date(year, month, day)
       });
@@ -209,7 +226,7 @@ class DatePicker extends Component {
   }
 
   onTimePicked({action, hour, minute}) {
-    if (action !== DatePickerAndroid.dismissedAction) {
+    if (hour !== undefined && minute !== undefined) {
       this.setState({
         date: Moment().hour(hour).minute(minute).toDate()
       });
@@ -222,10 +239,10 @@ class DatePicker extends Component {
   onDatetimePicked({action, year, month, day}) {
     const {mode, androidMode, format = FORMATS[mode], is24Hour = !format.match(/h|a/)} = this.props;
 
-    if (action !== DatePickerAndroid.dismissedAction) {
+    if (year !== undefined && month !== undefined && day !== undefined) {
       let timeMoment = Moment(this.state.date);
 
-      TimePickerAndroid.open({
+      DateTimePicker.open({
         hour: timeMoment.hour(),
         minute: timeMoment.minutes(),
         is24Hour: is24Hour,
@@ -237,7 +254,7 @@ class DatePicker extends Component {
   }
 
   onDatetimeTimePicked(year, month, day, {action, hour, minute}) {
-    if (action !== DatePickerAndroid.dismissedAction) {
+    if (hour !== undefined && minute !== undefined) {
       this.setState({
         date: new Date(year, month, day, hour, minute)
       });
@@ -267,7 +284,7 @@ class DatePicker extends Component {
 
       // 选日期
       if (mode === 'date') {
-        DatePickerAndroid.open({
+        DateTimePicker.open({
           date: this.state.date,
           minDate: minDate && this.getDate(minDate),
           maxDate: maxDate && this.getDate(maxDate),
@@ -278,7 +295,7 @@ class DatePicker extends Component {
 
         let timeMoment = Moment(this.state.date);
 
-        TimePickerAndroid.open({
+        DateTimePicker.open({
           hour: timeMoment.hour(),
           minute: timeMoment.minutes(),
           is24Hour: is24Hour,
@@ -287,7 +304,7 @@ class DatePicker extends Component {
       } else if (mode === 'datetime') {
         // 选日期和时间
 
-        DatePickerAndroid.open({
+        DateTimePicker.open({
           date: this.state.date,
           minDate: minDate && this.getDate(minDate),
           maxDate: maxDate && this.getDate(maxDate),
@@ -391,12 +408,12 @@ class DatePicker extends Component {
                     style={[Style.datePickerCon, {height: this.state.animatedHeight}, customStyles.datePickerCon]}
                   >
                     <View pointerEvents={this.state.allowPointerEvents ? 'auto' : 'none'}>
-                      <DatePickerIOS
-                        date={this.state.date}
+                      <DateTimePicker
+                        value={this.state.date}
                         mode={mode}
                         minimumDate={minDate && this.getDate(minDate)}
                         maximumDate={maxDate && this.getDate(maxDate)}
-                        onDateChange={this.onDateChange}
+                        onChange={this.onDateChange}
                         minuteInterval={minuteInterval}
                         timeZoneOffsetInMinutes={timeZoneOffsetInMinutes ? timeZoneOffsetInMinutes : null}
                         style={[Style.datePicker, customStyles.datePicker]}
