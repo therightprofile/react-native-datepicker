@@ -410,14 +410,18 @@ class DatePicker extends Component {
                     <View pointerEvents={this.state.allowPointerEvents ? 'auto' : 'none'}>
                       <DateTimePicker
                         value={this.state.date}
-                        mode={mode}
+                        mode={"date"} 
+                        display="spinner"
                         minimumDate={minDate && this.getDate(minDate)}
                         maximumDate={maxDate && this.getDate(maxDate)}
-                        onChange={this.onDateChange}
+                        //onChange={this.onDateChange}
                         minuteInterval={minuteInterval}
                         timeZoneOffsetInMinutes={timeZoneOffsetInMinutes ? timeZoneOffsetInMinutes : null}
                         style={[Style.datePicker, customStyles.datePicker]}
                         locale={locale}
+                        onChange={(e, selectedDate) => {
+                          this.onDateChange(selectedDate);
+                        }}
                       />
                     </View>
                     <TouchableComponent
